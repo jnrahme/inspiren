@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CareVision — How It Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ───────── TOKENS ───────── */
+:root{
+  --bg:#0b1215;
+  --bg-elevated:#111a1f;
+  --bg-card:rgba(20,34,40,0.72);
+  --bg-glass:rgba(255,255,255,0.04);
+  --ink:#e8eeef;
+  --ink-soft:#8fa5aa;
+  --ink-muted:rgba(143,165,170,0.5);
+  --teal:#3ddbc4;
+  --teal-dim:rgba(61,219,196,0.12);
+  --coral:#f07060;
+  --coral-dim:rgba(240,112,96,0.12);
+  --gold:#e7be62;
+  --gold-dim:rgba(231,190,98,0.12);
+  --sky:#6ec8e6;
+  --sky-dim:rgba(110,200,230,0.12);
+  --purple:#a78bfa;
+  --purple-dim:rgba(167,139,250,0.12);
+  --line:rgba(255,255,255,0.06);
+  --glow-teal:0 0 40px rgba(61,219,196,0.15);
+  --glow-coral:0 0 40px rgba(240,112,96,0.12);
+  --radius-sm:12px;
+  --radius-md:20px;
+  --radius-lg:28px;
+  --radius-xl:36px;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --content:1200px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--bg);overflow-x:hidden;line-height:1.6}
+
+/* ambient */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 40% at 10% 0%,rgba(61,219,196,0.08),transparent),
+  radial-gradient(ellipse 50% 40% at 90% 10%,rgba(240,112,96,0.06),transparent),
+  radial-gradient(ellipse 40% 30% at 70% 90%,rgba(167,139,250,0.05),transparent);z-index:0}
+
+.serif{font-family:'Fraunces',Georgia,serif;letter-spacing:-.02em}
+a{color:var(--teal);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.shell{position:relative;z-index:1;width:min(calc(100% - 48px),var(--content));margin:0 auto}
+
+/* ───────── NAV ───────── */
+.topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);background:rgba(11,18,21,0.78);border-bottom:1px solid var(--line)}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:.95rem}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--teal);box-shadow:0 0 12px var(--teal)}
+.nav-links{display:flex;gap:6px;flex-wrap:wrap}
+.nav-link{padding:7px 14px;border-radius:999px;font-size:.82rem;font-weight:500;color:var(--ink-soft);transition:all .2s var(--ease)}
+.nav-link:hover{background:var(--bg-glass);color:var(--ink);text-decoration:none}
+.badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.badge-teal{background:var(--teal-dim);color:var(--teal)}
+.badge-coral{background:var(--coral-dim);color:var(--coral)}
+.badge-gold{background:var(--gold-dim);color:var(--gold)}
+.badge-sky{background:var(--sky-dim);color:var(--sky)}
+.badge-purple{background:var(--purple-dim);color:var(--purple)}
+
+/* ───────── HERO ───────── */
+.hero{padding:100px 0 80px;text-align:center}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:var(--teal-dim);color:var(--teal);font-size:.82rem;font-weight:600;margin-bottom:28px}
+.hero h1{font-size:clamp(3rem,7vw,5.5rem);line-height:.95;font-weight:800;max-width:16ch;margin:0 auto 24px}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--teal),var(--sky));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{max-width:54ch;margin:0 auto;font-size:1.15rem;color:var(--ink-soft);line-height:1.7}
+.hero-links{display:flex;justify-content:center;gap:12px;margin-top:32px;flex-wrap:wrap}
+.hero-btn{padding:12px 24px;border-radius:999px;font-size:.9rem;font-weight:600;border:1px solid var(--line);transition:all .2s var(--ease)}
+.hero-btn-primary{background:var(--teal);color:var(--bg);border-color:transparent}
+.hero-btn-primary:hover{box-shadow:var(--glow-teal);transform:translateY(-2px);text-decoration:none}
+.hero-btn-secondary{color:var(--ink-soft)}
+.hero-btn-secondary:hover{background:var(--bg-glass);color:var(--ink);text-decoration:none}
+
+/* ───────── SECTIONS ───────── */
+section{padding:80px 0}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-muted);margin-bottom:16px}
+.section-label .dot{width:6px;height:6px;border-radius:50%}
+h2{font-size:clamp(2rem,4vw,3.2rem);font-weight:700;line-height:1.05;margin-bottom:16px}
+.section-desc{max-width:56ch;font-size:1.02rem;color:var(--ink-soft);line-height:1.7;margin-bottom:40px}
+
+/* ───────── FLOW DIAGRAM ───────── */
+.flow-canvas{position:relative;padding:48px 0;overflow:hidden}
+.flow-row{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin-bottom:40px}
+.flow-node{display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 20px;border-radius:var(--radius-lg);background:var(--bg-card);border:1px solid var(--line);backdrop-filter:blur(12px);min-width:160px;text-align:center;position:relative;transition:all .3s var(--ease)}
+.flow-node:hover{border-color:rgba(61,219,196,0.2);box-shadow:var(--glow-teal);transform:translateY(-4px)}
+.flow-icon{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;font-size:1.5rem}
+.flow-node h4{font-size:.92rem;font-weight:600}
+.flow-node p{font-size:.78rem;color:var(--ink-soft);line-height:1.4}
+.flow-arrow{display:flex;align-items:center;padding:0 8px;color:var(--ink-muted);font-size:1.4rem;flex-shrink:0}
+.flow-arrow svg{width:48px;height:24px}
+.flow-arrow path{stroke:var(--teal);stroke-width:2;fill:none;stroke-dasharray:6 4;animation:dash 1.5s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-20}}
+
+/* ───────── ARCHITECTURE DIAGRAM ───────── */
+.arch-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+.arch-layer{border-radius:var(--radius-lg);border:1px solid var(--line);background:var(--bg-card);backdrop-filter:blur(12px);padding:28px;position:relative;overflow:hidden;transition:all .3s var(--ease)}
+.arch-layer:hover{border-color:rgba(255,255,255,0.1);transform:translateY(-4px)}
+.arch-layer::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0}
+.arch-ios::before{background:linear-gradient(90deg,var(--teal),var(--sky))}
+.arch-backend::before{background:linear-gradient(90deg,var(--coral),var(--gold))}
+.arch-comms::before{background:linear-gradient(90deg,var(--purple),var(--sky))}
+.arch-layer h3{font-size:1.3rem;font-weight:700;margin:12px 0 8px}
+.arch-layer .arch-subtitle{font-size:.82rem;color:var(--ink-muted);margin-bottom:16px}
+.arch-item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.arch-item-icon{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex-shrink:0;font-size:.9rem}
+.arch-item-text h4{font-size:.88rem;font-weight:600;margin-bottom:2px}
+.arch-item-text p{font-size:.82rem;color:var(--ink-soft);line-height:1.45}
+
+/* ───────── CV PIPELINE ───────── */
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.pipe-stage{padding:24px;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--line);text-align:center;position:relative;transition:all .3s var(--ease)}
+.pipe-stage:hover{transform:translateY(-4px);border-color:rgba(61,219,196,0.2)}
+.pipe-stage::after{content:"";position:absolute;right:-12px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-right:2px solid var(--teal);border-top:2px solid var(--teal);transform:translateY(-50%) rotate(45deg);opacity:.4}
+.pipe-stage:last-child::after{display:none}
+.pipe-number{width:32px;height:32px;border-radius:10px;background:var(--teal-dim);color:var(--teal);display:inline-grid;place-items:center;font-size:.82rem;font-weight:700;margin-bottom:12px}
+.pipe-stage h4{font-size:.95rem;font-weight:600;margin-bottom:6px}
+.pipe-stage p{font-size:.82rem;color:var(--ink-soft);line-height:1.45}
+
+/* ───────── STATE MACHINE ───────── */
+.state-diagram{display:flex;align-items:center;justify-content:center;gap:16px;padding:32px 0;flex-wrap:wrap}
+.state-node{padding:20px 28px;border-radius:var(--radius-md);text-align:center;border:2px solid;min-width:140px;transition:all .3s var(--ease)}
+.state-node:hover{transform:scale(1.05)}
+.state-node h4{font-size:1rem;font-weight:700;margin-bottom:4px}
+.state-node p{font-size:.78rem;opacity:.7}
+.state-new{border-color:var(--coral);background:var(--coral-dim);color:var(--coral)}
+.state-ack{border-color:var(--teal);background:var(--teal-dim);color:var(--teal)}
+.state-esc{border-color:var(--gold);background:var(--gold-dim);color:var(--gold)}
+.state-arrow{color:var(--ink-muted);font-size:.82rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.state-arrow svg{width:40px;height:16px}
+.state-arrow svg path{stroke:currentColor;stroke-width:1.5;fill:none}
+
+/* ───────── PROTOCOL TABLE ───────── */
+.protocol-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.proto-card{padding:24px;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--line);transition:all .3s var(--ease)}
+.proto-card:hover{border-color:rgba(255,255,255,0.1);transform:translateY(-4px)}
+.proto-card h4{font-size:1.1rem;font-weight:700;margin-bottom:4px}
+.proto-card .proto-tech{font-size:.82rem;color:var(--ink-muted);margin-bottom:12px}
+.proto-card p{font-size:.88rem;color:var(--ink-soft);line-height:1.55}
+.proto-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:600;margin-top:12px}
+
+/* ───────── METRICS ───────── */
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.metric-card{padding:24px;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--line);text-align:center;transition:all .3s var(--ease)}
+.metric-card:hover{transform:translateY(-4px);border-color:rgba(61,219,196,0.2)}
+.metric-value{font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1;margin-bottom:4px}
+.metric-label{font-size:.78rem;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.metric-desc{font-size:.82rem;color:var(--ink-soft)}
+
+/* ───────── STRUCTURE ───────── */
+.tree{font-family:'SF Mono','Fira Code',monospace;font-size:.85rem;line-height:1.8;color:var(--ink-soft);padding:28px;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--line);overflow-x:auto}
+.tree .dir{color:var(--teal);font-weight:600}
+.tree .file{color:var(--ink-soft)}
+.tree .comment{color:var(--ink-muted);font-style:italic}
+
+/* ───────── FOOTER ───────── */
+footer{padding:48px 0;border-top:1px solid var(--line);text-align:center;color:var(--ink-muted);font-size:.88rem}
+footer a{color:var(--teal)}
+
+/* ───────── ANIMATIONS ───────── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+
+/* ───────── RESPONSIVE ───────── */
+@media(max-width:900px){
+  .arch-grid,.pipeline,.protocol-grid{grid-template-columns:1fr}
+  .metrics-row{grid-template-columns:repeat(2,1fr)}
+  .flow-row{flex-direction:column;gap:0}
+  .flow-arrow{transform:rotate(90deg);padding:4px 0}
+  .pipe-stage::after{display:none}
+}
+@media(max-width:600px){
+  .shell{width:min(calc(100% - 24px),var(--content))}
+  .hero{padding:60px 0 40px}
+  section{padding:48px 0}
+  .metrics-row{grid-template-columns:1fr}
+  .state-diagram{flex-direction:column}
+  .state-arrow{transform:rotate(90deg)}
+}
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  .flow-arrow path{animation:none}
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="topbar">
+<div class="shell topbar-inner">
+  <div class="logo"><span class="logo-dot"></span>CareVision</div>
+  <nav class="nav-links">
+    <a class="nav-link" href="#loop">Alert loop</a>
+    <a class="nav-link" href="#architecture">Architecture</a>
+    <a class="nav-link" href="#vision">Vision pipeline</a>
+    <a class="nav-link" href="#alerts">Alert states</a>
+    <a class="nav-link" href="#protocols">Protocols</a>
+    <a class="nav-link" href="#performance">Performance</a>
+    <a class="nav-link" href="technical-decisions.html">Decisions &rarr;</a>
+  </nav>
+</div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+<div class="shell">
+  <div class="hero-eyebrow serif">System documentation</div>
+  <h1 class="serif">How <em>CareVision</em> works.</h1>
+  <p>A real-time caregiver alert system that uses on-device computer vision and low-latency video streaming to give caregivers fast, trustworthy context when a resident needs attention.</p>
+  <div class="hero-links">
+    <a class="hero-btn hero-btn-primary" href="https://github.com/jnrahme/inspiren" target="_blank">View on GitHub</a>
+    <a class="hero-btn hero-btn-secondary" href="technical-decisions.html">Why we built it this way &rarr;</a>
+  </div>
+</div>
+</section>
+
+<!-- THE ALERT LOOP -->
+<section id="loop">
+<div class="shell">
+  <div class="section-label"><span class="dot" style="background:var(--teal)"></span> The core loop</div>
+  <h2 class="serif reveal">From detection to response in seconds.</h2>
+  <p class="section-desc reveal d1">Every feature in CareVision exists to serve one loop: something happens in a room, a caregiver finds out immediately, sees live context, and takes action. The entire cycle completes in under two seconds on a local network.</p>
+
+  <div class="flow-canvas">
+    <div class="flow-row">
+      <!-- Node 1 -->
+      <div class="flow-node reveal d1">
+        <div class="flow-icon" style="background:var(--teal-dim)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>
+        </div>
+        <h4>Sensor captures</h4>
+        <p>Camera runs at 30fps,<br/>Vision samples at ~5fps</p>
+        <span class="badge badge-teal">iOS + Vision</span>
+      </div>
+
+      <div class="flow-arrow"><svg viewBox="0 0 48 24"><path d="M4 12h36m-8-6 8 6-8 6"/></svg></div>
+
+      <!-- Node 2 -->
+      <div class="flow-node reveal d2">
+        <div class="flow-icon" style="background:var(--coral-dim)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.5"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        </div>
+        <h4>CV detects event</h4>
+        <p>Bed exit, upright pose,<br/>or motion spike</p>
+        <span class="badge badge-coral">On-device</span>
+      </div>
+
+      <div class="flow-arrow"><svg viewBox="0 0 48 24"><path d="M4 12h36m-8-6 8 6-8 6"/></svg></div>
+
+      <!-- Node 3 -->
+      <div class="flow-node reveal d2">
+        <div class="flow-icon" style="background:var(--gold-dim)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="3"/><path d="M8 7h8m-8 4h5m-5 4h8"/></svg>
+        </div>
+        <h4>Backend creates alert</h4>
+        <p>Validates, deduplicates,<br/>broadcasts via SSE</p>
+        <span class="badge badge-gold">Fastify + SSE</span>
+      </div>
+
+      <div class="flow-arrow"><svg viewBox="0 0 48 24"><path d="M4 12h36m-8-6 8 6-8 6"/></svg></div>
+
+      <!-- Node 4 -->
+      <div class="flow-node reveal d3">
+        <div class="flow-icon" style="background:var(--sky-dim)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="1.5"><path d="M15 10l5-5m0 0h-4m4 0v4"/><path d="M4 20V10a2 2 0 0 1 2-2h4"/><rect x="2" y="14" width="8" height="8" rx="2"/></svg>
+        </div>
+        <h4>Caregiver sees alert</h4>
+        <p>Real-time push,<br/>no polling needed</p>
+        <span class="badge badge-sky">SSE stream</span>
+      </div>
+
+      <div class="flow-arrow"><svg viewBox="0 0 48 24"><path d="M4 12h36m-8-6 8 6-8 6"/></svg></div>
+
+      <!-- Node 5 -->
+      <div class="flow-node reveal d3">
+        <div class="flow-icon" style="background:var(--purple-dim)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="9 11 12 14 22 4"/></svg>
+        </div>
+        <h4>Opens live stream</h4>
+        <p>Sub-second video,<br/>motion overlay</p>
+        <span class="badge badge-purple">WebRTC</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture" style="background:var(--bg-elevated)">
+<div class="shell">
+  <div class="section-label"><span class="dot" style="background:var(--coral)"></span> Architecture</div>
+  <h2 class="serif reveal">Three layers, clean boundaries.</h2>
+  <p class="section-desc reveal d1">Each layer does one thing well and communicates through well-defined contracts. The iOS app handles capture and display. The backend handles orchestration. WebRTC handles media.</p>
+
+  <div class="arch-grid">
+    <!-- iOS -->
+    <div class="arch-layer arch-ios reveal d1">
+      <span class="badge badge-teal">Client</span>
+      <h3 class="serif">iOS App</h3>
+      <p class="arch-subtitle">SwiftUI + AVFoundation + Vision + LiveKit</p>
+
+      <div class="arch-item">
+        <div class="arch-item-icon" style="background:var(--teal-dim);color:var(--teal)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2"/></svg>
+        </div>
+        <div class="arch-item-text">
+          <h4>Sensor Mode</h4>
+          <p>Camera capture, on-device Vision analysis, bed-exit state machine, LiveKit publish</p>
+        </div>
+      </div>
+
+      <div class="arch-item">
+        <div class="arch-item-icon" style="background:var(--sky-dim);color:var(--sky)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+        </div>
+        <div class="arch-item-text">
+          <h4>Caregiver Mode</h4>
+          <p>SSE alert stream, live video subscriber, alert inbox, acknowledge actions, timeline</p>
+        </div>
+      </div>
+
+      <div class="arch-item">
+        <div class="arch-item-icon" style="background:var(--purple-dim);color:var(--purple)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="arch-item-text">
+          <h4>Motion Overlay</h4>
+          <p>Renders skeleton, bounding box, and motion trail on the live stream</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Backend -->
+    <div class="arch-layer arch-backend reveal d2">
+      <span class="badge badge-coral">Server</span>
+      <h3 class="serif">Backend</h3>
+      <p class="arch-subtitle">Node.js + TypeScript + Fastify + Zod</p>
+
+      <div class="arch-item">
+        <div class="arch-item-icon" style="background:var(--coral-dim);color:var(--coral)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="arch-item-text">
+          <h4>Auth + Tokens</h4>
+          <p>Demo sessions with bearer tokens, LiveKit JWT generation with role-based permissions</p>
+        </div>
+      </div>
+
+      <div class="arch-item">
+        <div class="arch-item-icon" style="background:var(--gold-dim);color:var(--gold)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="arch-item-text">
+          <h4>Event Ingest + Alerts</h4>
+          <p>CV event processing with idempotency, alert state machine, timeline audit trail</p>
+        </div>
+      </div>
+
+      <div class="arch-item">
+        <div class="arch-item-icon" style="background:var(--teal-dim);color:var(--teal)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
+        </div>
+        <div class="arch-item-text">
+          <h4>SSE Fanout</h4>
+          <p>Real-time push to all connected caregivers when alerts are created or updated</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Communication -->
+    <div class="arch-layer arch-comms reveal d3">
+      <span class="badge badge-purple">Transport</span>
+      <h3 class="serif">Communication</h3>
+      <p class="arch-subtitle">WebRTC + SSE + REST</p>
+
+      <div class="arch-item">
+        <div class="arch-item-icon" style="background:var(--purple-dim);color:var(--purple)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        </div>
+        <div class="arch-item-text">
+          <h4>WebRTC via LiveKit</h4>
+          <p>Low-latency video streaming between sensor and caregiver devices</p>
+        </div>
+      </div>
+
+      <div class="arch-item">
+        <div class="arch-item-icon" style="background:var(--sky-dim);color:var(--sky)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+        <div class="arch-item-text">
+          <h4>Server-Sent Events</h4>
+          <p>Unidirectional push for alerts and timeline updates, no client polling</p>
+        </div>
+      </div>
+
+      <div class="arch-item">
+        <div class="arch-item-icon" style="background:var(--gold-dim);color:var(--gold)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9"/></svg>
+        </div>
+        <div class="arch-item-text">
+          <h4>REST API</h4>
+          <p>Session creation, token requests, alert acknowledgment, timeline queries</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- CV PIPELINE -->
+<section id="vision">
+<div class="shell">
+  <div class="section-label"><span class="dot" style="background:var(--gold)"></span> Computer vision</div>
+  <h2 class="serif reveal">On-device detection. Nothing leaves the phone.</h2>
+  <p class="section-desc reveal d1">The Vision pipeline runs entirely on the iPhone using Apple's framework. No video frames are uploaded. No cloud ML. The phone processes roughly 5 frames per second and feeds the results into a state machine that decides when something clinically relevant is happening.</p>
+
+  <div class="pipeline reveal d2">
+    <div class="pipe-stage">
+      <div class="pipe-number serif">1</div>
+      <h4>Capture</h4>
+      <p>AVFoundation grabs camera frames at 30fps. The pipeline samples every ~200ms to keep CPU reasonable.</p>
+    </div>
+    <div class="pipe-stage">
+      <div class="pipe-number serif">2</div>
+      <h4>Detect</h4>
+      <p>Vision finds people in the frame (bounding box) and estimates 19 body pose landmarks per person.</p>
+    </div>
+    <div class="pipe-stage">
+      <div class="pipe-number serif">3</div>
+      <h4>Classify</h4>
+      <p>Calculates upright score, leg extension, motion delta, and zone occupancy from the pose data.</p>
+    </div>
+    <div class="pipe-stage">
+      <div class="pipe-number serif">4</div>
+      <h4>Decide</h4>
+      <p>BedExitDetector state machine applies persistence and cooldown windows to avoid false positives.</p>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:32px">
+    <div class="proto-card reveal d3">
+      <h4>What it measures</h4>
+      <div style="display:grid;gap:8px;margin-top:12px">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink-soft);font-size:.88rem">Upright score</span><span style="font-size:.82rem;color:var(--teal)">Shoulder-hip alignment + aspect ratio</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink-soft);font-size:.88rem">Leg extension</span><span style="font-size:.82rem;color:var(--teal)">Hip-knee-ankle geometry</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink-soft);font-size:.88rem">Motion score</span><span style="font-size:.82rem;color:var(--teal)">Frame-to-frame centroid delta</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0"><span style="color:var(--ink-soft);font-size:.88rem">Zone occupancy</span><span style="font-size:.82rem;color:var(--teal)">Center of mass inside exit zone</span></div>
+      </div>
+    </div>
+    <div class="proto-card reveal d4">
+      <h4>How it avoids noise</h4>
+      <div style="display:grid;gap:8px;margin-top:12px">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink-soft);font-size:.88rem">Persistence window</span><span style="font-size:.82rem;color:var(--coral)">0.6 &ndash; 0.8s before triggering</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink-soft);font-size:.88rem">Cooldown window</span><span style="font-size:.82rem;color:var(--coral)">8 &ndash; 10s between re-triggers</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink-soft);font-size:.88rem">Clear window</span><span style="font-size:.82rem;color:var(--coral)">3s vacancy resets state</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0"><span style="color:var(--ink-soft);font-size:.88rem">Idempotency keys</span><span style="font-size:.82rem;color:var(--coral)">Backend deduplicates events</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ALERT STATE MACHINE -->
+<section id="alerts" style="background:var(--bg-elevated)">
+<div class="shell">
+  <div class="section-label"><span class="dot" style="background:var(--coral)"></span> Alert lifecycle</div>
+  <h2 class="serif reveal">Simple states, clear transitions.</h2>
+  <p class="section-desc reveal d1">Every alert follows a predictable lifecycle. There is no ambiguity about what state an alert is in or who acted on it. The timeline records every transition.</p>
+
+  <div class="state-diagram reveal d2">
+    <div class="state-node state-new">
+      <h4>New</h4>
+      <p>Just created</p>
+    </div>
+
+    <div class="state-arrow">
+      <svg viewBox="0 0 40 16"><path d="M4 8h28m-6-4 6 4-6 4"/></svg>
+      <span>acknowledge</span>
+    </div>
+
+    <div class="state-node state-ack">
+      <h4>Acknowledged</h4>
+      <p>Caregiver saw it</p>
+    </div>
+
+    <div class="state-arrow">
+      <svg viewBox="0 0 40 16"><path d="M4 8h28m-6-4 6 4-6 4"/></svg>
+      <span>escalate</span>
+    </div>
+
+    <div class="state-node state-esc">
+      <h4>Escalated</h4>
+      <p>Needs more help</p>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:16px" class="reveal d3">
+    <p style="color:var(--ink-muted);font-size:.88rem;max-width:48ch;margin:0 auto">Alerts can also go directly from <strong style="color:var(--coral)">New</strong> to <strong style="color:var(--gold)">Escalated</strong>, skipping acknowledgment. There is no reopen or resolve in the MVP &mdash; once escalated, the alert is terminal.</p>
+  </div>
+</div>
+</section>
+
+<!-- PROTOCOLS -->
+<section id="protocols">
+<div class="shell">
+  <div class="section-label"><span class="dot" style="background:var(--purple)"></span> Communication</div>
+  <h2 class="serif reveal">Three protocols, each chosen for a reason.</h2>
+  <p class="section-desc reveal d1">We do not use one protocol for everything. Each communication path uses the transport that matches its latency, reliability, and direction requirements.</p>
+
+  <div class="protocol-grid reveal d2">
+    <div class="proto-card">
+      <span class="badge badge-purple" style="margin-bottom:12px">Bidirectional</span>
+      <h4>WebRTC via LiveKit</h4>
+      <p class="proto-tech">Live video + data channel</p>
+      <p>Sub-second latency video from sensor to caregiver. Also carries the motion overlay data via an unreliable data channel so the stream is never blocked by overlay failures.</p>
+      <div class="proto-badge" style="background:var(--purple-dim);color:var(--purple)">Latency critical</div>
+    </div>
+    <div class="proto-card">
+      <span class="badge badge-sky" style="margin-bottom:12px">Server &rarr; Client</span>
+      <h4>Server-Sent Events</h4>
+      <p class="proto-tech">Alerts + timeline updates</p>
+      <p>Persistent HTTP connection from the backend to every connected caregiver. When an alert is created or updated, the backend pushes it instantly. No polling, no WebSocket complexity.</p>
+      <div class="proto-badge" style="background:var(--sky-dim);color:var(--sky)">Real-time push</div>
+    </div>
+    <div class="proto-card">
+      <span class="badge badge-gold" style="margin-bottom:12px">Request / Response</span>
+      <h4>REST API</h4>
+      <p class="proto-tech">JSON over HTTP</p>
+      <p>Used for actions that need confirmation: creating sessions, requesting tokens, acknowledging alerts, querying the timeline. Standard request-response where you need a guaranteed result.</p>
+      <div class="proto-badge" style="background:var(--gold-dim);color:var(--gold)">Reliable actions</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- PERFORMANCE -->
+<section id="performance" style="background:var(--bg-elevated)">
+<div class="shell">
+  <div class="section-label"><span class="dot" style="background:var(--teal)"></span> Performance</div>
+  <h2 class="serif reveal">Built for speed that matters clinically.</h2>
+  <p class="section-desc reveal d1">These are the performance budgets for the local demo environment. In a care setting, every second between detection and response matters.</p>
+
+  <div class="metrics-row reveal d2">
+    <div class="metric-card">
+      <div class="metric-value serif" style="color:var(--teal)">&lt;1.5s</div>
+      <div class="metric-label">Time to first frame</div>
+      <div class="metric-desc">From tapping the stream to seeing live video</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value serif" style="color:var(--coral)">&lt;500ms</div>
+      <div class="metric-label">Event to alert</div>
+      <div class="metric-desc">From CV detection to caregiver notification</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value serif" style="color:var(--gold)">&lt;300ms</div>
+      <div class="metric-label">Ack to update</div>
+      <div class="metric-desc">From acknowledgment to UI confirmation</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value serif" style="color:var(--purple)">5 fps</div>
+      <div class="metric-label">Vision throughput</div>
+      <div class="metric-desc">Frames analyzed per second on device</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- PROJECT STRUCTURE -->
+<section id="structure">
+<div class="shell">
+  <div class="section-label"><span class="dot" style="background:var(--sky)"></span> Project structure</div>
+  <h2 class="serif reveal">Clean, navigable, intentional.</h2>
+  <p class="section-desc reveal d1">The codebase is organized by responsibility. Backend source is 5 files. The iOS app separates features, services, and shared components.</p>
+
+  <div class="tree reveal d2">
+<span class="dir">backend/</span>
+  <span class="dir">src/</span>
+    <span class="file">index.ts</span>        <span class="comment"># Fastify server, all API routes</span>
+    <span class="file">types.ts</span>        <span class="comment"># Shared type definitions</span>
+    <span class="file">store.ts</span>        <span class="comment"># In-memory data store and pub/sub</span>
+    <span class="file">config.ts</span>       <span class="comment"># Environment configuration</span>
+    <span class="file">livekit.ts</span>      <span class="comment"># LiveKit JWT token generation</span>
+  <span class="dir">scripts/</span>
+    <span class="file">smoke.mjs</span>       <span class="comment"># Integration smoke test</span>
+  <span class="dir">public/</span>
+    <span class="file">laptop-sensor.html</span> <span class="comment"># Browser-based sensor for demos</span>
+
+<span class="dir">ios/CareVisionSample/</span>
+  <span class="dir">App/</span>              <span class="comment"># Entry point, root navigation</span>
+  <span class="dir">Core/</span>             <span class="comment"># Theme and shared data models</span>
+  <span class="dir">Features/</span>
+    <span class="dir">Sensor/</span>         <span class="comment"># Sensor mode views and view model</span>
+    <span class="dir">Caregiver/</span>      <span class="comment"># Caregiver mode views and view model</span>
+    <span class="dir">Common/</span>         <span class="comment"># Shared UI (overlay, camera, cards)</span>
+  <span class="dir">Services/</span>         <span class="comment"># API client, SSE, LiveKit, camera, detection</span>
+
+<span class="dir">docs/</span>
+  <span class="file">api-contract.md</span>         <span class="comment"># Complete REST API spec</span>
+  <span class="file">DECISIONS.md</span>            <span class="comment"># Architecture scope decisions</span>
+  <span class="file">event-spec-bed-exit-risk.md</span> <span class="comment"># CV event detection spec</span>
+  <span class="file">demo-validation.md</span>      <span class="comment"># Demo script and perf budgets</span>
+  </div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+<div class="shell">
+  <p>CareVision &mdash; built by <a href="https://github.com/jnrahme" target="_blank">Joey Rahme</a> &middot; <a href="https://github.com/jnrahme/inspiren" target="_blank">GitHub</a> &middot; <a href="technical-decisions.html">Why we built it this way &rarr;</a></p>
+</div>
+</footer>
+
+<script>
+// Intersection Observer for reveal animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

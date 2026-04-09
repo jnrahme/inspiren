@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CareVision — Technical Decisions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0b1215;--bg-elevated:#111a1f;--bg-card:rgba(20,34,40,0.72);--bg-glass:rgba(255,255,255,0.04);
+  --ink:#e8eeef;--ink-soft:#8fa5aa;--ink-muted:rgba(143,165,170,0.5);
+  --teal:#3ddbc4;--teal-dim:rgba(61,219,196,0.12);
+  --coral:#f07060;--coral-dim:rgba(240,112,96,0.12);
+  --gold:#e7be62;--gold-dim:rgba(231,190,98,0.12);
+  --sky:#6ec8e6;--sky-dim:rgba(110,200,230,0.12);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,0.12);
+  --green:#4ade80;--green-dim:rgba(74,222,128,0.12);
+  --line:rgba(255,255,255,0.06);
+  --glow-teal:0 0 40px rgba(61,219,196,0.15);
+  --radius-sm:12px;--radius-md:20px;--radius-lg:28px;--radius-xl:36px;
+  --ease:cubic-bezier(.16,1,.3,1);--content:1200px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--bg);overflow-x:hidden;line-height:1.6}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 40% at 90% 0%,rgba(167,139,250,0.07),transparent),
+  radial-gradient(ellipse 50% 40% at 10% 10%,rgba(61,219,196,0.06),transparent),
+  radial-gradient(ellipse 40% 30% at 50% 90%,rgba(231,190,98,0.04),transparent);z-index:0}
+.serif{font-family:'Fraunces',Georgia,serif;letter-spacing:-.02em}
+a{color:var(--teal);text-decoration:none}a:hover{text-decoration:underline}
+.shell{position:relative;z-index:1;width:min(calc(100% - 48px),var(--content));margin:0 auto}
+
+/* NAV */
+.topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);background:rgba(11,18,21,0.78);border-bottom:1px solid var(--line)}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:.95rem}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--purple);box-shadow:0 0 12px var(--purple)}
+.nav-links{display:flex;gap:6px;flex-wrap:wrap}
+.nav-link{padding:7px 14px;border-radius:999px;font-size:.82rem;font-weight:500;color:var(--ink-soft);transition:all .2s var(--ease)}
+.nav-link:hover{background:var(--bg-glass);color:var(--ink);text-decoration:none}
+.badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.badge-teal{background:var(--teal-dim);color:var(--teal)}
+.badge-coral{background:var(--coral-dim);color:var(--coral)}
+.badge-gold{background:var(--gold-dim);color:var(--gold)}
+.badge-sky{background:var(--sky-dim);color:var(--sky)}
+.badge-purple{background:var(--purple-dim);color:var(--purple)}
+.badge-green{background:var(--green-dim);color:var(--green)}
+
+/* HERO */
+.hero{padding:100px 0 80px;text-align:center}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:var(--purple-dim);color:var(--purple);font-size:.82rem;font-weight:600;margin-bottom:28px}
+.hero h1{font-size:clamp(3rem,7vw,5.5rem);line-height:.95;font-weight:800;max-width:18ch;margin:0 auto 24px}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--purple),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{max-width:56ch;margin:0 auto;font-size:1.15rem;color:var(--ink-soft);line-height:1.7}
+.hero-links{display:flex;justify-content:center;gap:12px;margin-top:32px;flex-wrap:wrap}
+.hero-btn{padding:12px 24px;border-radius:999px;font-size:.9rem;font-weight:600;border:1px solid var(--line);transition:all .2s var(--ease)}
+.hero-btn-primary{background:var(--purple);color:var(--bg);border-color:transparent}
+.hero-btn-primary:hover{box-shadow:0 0 40px rgba(167,139,250,0.2);transform:translateY(-2px);text-decoration:none}
+.hero-btn-secondary{color:var(--ink-soft)}
+.hero-btn-secondary:hover{background:var(--bg-glass);color:var(--ink);text-decoration:none}
+
+/* SECTIONS */
+section{padding:80px 0}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-muted);margin-bottom:16px}
+.section-label .dot{width:6px;height:6px;border-radius:50%}
+h2{font-size:clamp(2rem,4vw,3.2rem);font-weight:700;line-height:1.05;margin-bottom:16px}
+.section-desc{max-width:56ch;font-size:1.02rem;color:var(--ink-soft);line-height:1.7;margin-bottom:40px}
+
+/* DECISION CARDS */
+.decisions{display:grid;gap:24px}
+.decision{border-radius:var(--radius-lg);background:var(--bg-card);border:1px solid var(--line);backdrop-filter:blur(12px);overflow:hidden;transition:all .3s var(--ease)}
+.decision:hover{border-color:rgba(255,255,255,0.1);transform:translateY(-2px)}
+.decision-header{padding:32px 32px 0;display:flex;align-items:flex-start;gap:20px}
+.decision-icon{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;flex-shrink:0}
+.decision-title h3{font-size:1.4rem;font-weight:700;margin-bottom:6px}
+.decision-title p{font-size:.88rem;color:var(--ink-muted);line-height:1.4}
+.decision-body{padding:24px 32px 32px}
+.decision-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.decision-col h4{font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.decision-col p,.decision-col li{font-size:.9rem;color:var(--ink-soft);line-height:1.6}
+.decision-col ul{list-style:none;display:grid;gap:8px}
+.decision-col ul li{padding:10px 14px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.02);border:1px solid var(--line)}
+.decision-col ul li strong{color:var(--ink);display:block;margin-bottom:2px;font-size:.85rem}
+
+/* TRADEOFFS */
+.tradeoff-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.tradeoff{padding:24px;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--line);transition:all .3s var(--ease)}
+.tradeoff:hover{transform:translateY(-2px);border-color:rgba(255,255,255,0.1)}
+.tradeoff h4{font-size:1.05rem;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.tradeoff p{font-size:.88rem;color:var(--ink-soft);line-height:1.55}
+
+/* NOT INCLUDED */
+.scope-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.scope-card{padding:24px;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--line);text-align:center;transition:all .3s var(--ease)}
+.scope-card:hover{transform:translateY(-2px)}
+.scope-card h4{font-size:.95rem;font-weight:700;margin:12px 0 6px}
+.scope-card p{font-size:.82rem;color:var(--ink-soft);line-height:1.45}
+.scope-icon{width:44px;height:44px;border-radius:14px;display:inline-grid;place-items:center;background:rgba(255,255,255,0.03);border:1px solid var(--line)}
+
+/* PRINCIPLES */
+.principles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.principle{padding:28px;border-radius:var(--radius-md);border:1px solid var(--line);background:var(--bg-card);transition:all .3s var(--ease);position:relative;overflow:hidden}
+.principle:hover{transform:translateY(-4px);border-color:rgba(255,255,255,0.1)}
+.principle::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+.principle:nth-child(1)::before{background:var(--teal)}
+.principle:nth-child(2)::before{background:var(--coral)}
+.principle:nth-child(3)::before{background:var(--gold)}
+.principle:nth-child(4)::before{background:var(--purple)}
+.principle:nth-child(5)::before{background:var(--sky)}
+.principle:nth-child(6)::before{background:var(--green)}
+.principle h4{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.principle p{font-size:.88rem;color:var(--ink-soft);line-height:1.55}
+
+/* FOOTER */
+footer{padding:48px 0;border-top:1px solid var(--line);text-align:center;color:var(--ink-muted);font-size:.88rem}
+footer a{color:var(--purple)}
+
+/* ANIMATIONS */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+
+/* RESPONSIVE */
+@media(max-width:900px){.decision-grid,.tradeoff-grid{grid-template-columns:1fr}.scope-grid,.principles{grid-template-columns:1fr}}
+@media(max-width:600px){.shell{width:min(calc(100% - 24px),var(--content))}.hero{padding:60px 0 40px}section{padding:48px 0}.decision-header{flex-direction:column;gap:12px}.decision-header,.decision-body{padding-left:24px;padding-right:24px}}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+<div class="shell topbar-inner">
+  <div class="logo"><span class="logo-dot"></span>CareVision</div>
+  <nav class="nav-links">
+    <a class="nav-link" href="how-it-works.html">&larr; How it works</a>
+    <a class="nav-link" href="#principles">Principles</a>
+    <a class="nav-link" href="#decisions">Decisions</a>
+    <a class="nav-link" href="#tradeoffs">Trade-offs</a>
+    <a class="nav-link" href="#scope">Scope</a>
+  </nav>
+</div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+<div class="shell">
+  <div class="hero-eyebrow serif">Architecture rationale</div>
+  <h1 class="serif">Why we built it <em>this way.</em></h1>
+  <p>Every architectural decision in CareVision was made to serve one goal: give caregivers fast, trustworthy context when a resident needs attention. Here is why we chose what we chose, and what we intentionally left out.</p>
+  <div class="hero-links">
+    <a class="hero-btn hero-btn-primary" href="how-it-works.html">How it works</a>
+    <a class="hero-btn hero-btn-secondary" href="https://github.com/jnrahme/inspiren" target="_blank">View on GitHub</a>
+  </div>
+</div>
+</section>
+
+<!-- DESIGN PRINCIPLES -->
+<section id="principles">
+<div class="shell">
+  <div class="section-label"><span class="dot" style="background:var(--teal)"></span> Design principles</div>
+  <h2 class="serif reveal">The rules behind the choices.</h2>
+  <p class="section-desc reveal d1">These six principles guided every decision from technology selection to scope boundaries. When two approaches seemed equally valid, we used these to break the tie.</p>
+
+  <div class="principles">
+    <div class="principle reveal d1">
+      <h4>Privacy by architecture</h4>
+      <p>Video analysis runs on-device. No frames are uploaded. No cloud ML. The phone does the thinking, and only structured events leave the device. Privacy is not a policy; it is how the system is built.</p>
+    </div>
+    <div class="principle reveal d2">
+      <h4>Speed is clinical</h4>
+      <p>In a care setting, latency is not a performance metric. It is a safety metric. We optimized for time-to-first-frame and event-to-alert latency because seconds matter when a resident is at risk.</p>
+    </div>
+    <div class="principle reveal d2">
+      <h4>Thin backend, smart edges</h4>
+      <p>The backend orchestrates. It does not think. Intelligence lives on the device (Vision, state machine) and in the caregiver's hands (decision-making with live context). The server is a relay, not a brain.</p>
+    </div>
+    <div class="principle reveal d3">
+      <h4>Demo honesty</h4>
+      <p>This is a showcase, and we never pretend otherwise. In-memory storage, demo auth tokens, and simplified detection are all clearly documented. We prove the architecture works without faking production readiness.</p>
+    </div>
+    <div class="principle reveal d3">
+      <h4>One app, two roles</h4>
+      <p>Instead of building separate sensor and caregiver apps, we built one binary with a role picker. This makes the demo simpler, the codebase smaller, and the shared models guaranteed to stay in sync.</p>
+    </div>
+    <div class="principle reveal d4">
+      <h4>Prove the hard parts first</h4>
+      <p>We started with the riskiest technical problems: real-time video latency, on-device CV accuracy, and SSE delivery speed. Polish and persistence come after the core loop is proven.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- KEY DECISIONS -->
+<section id="decisions" style="background:var(--bg-elevated)">
+<div class="shell">
+  <div class="section-label"><span class="dot" style="background:var(--coral)"></span> Key decisions</div>
+  <h2 class="serif reveal">What we chose and why.</h2>
+  <p class="section-desc reveal d1">Each of these decisions had alternatives. We chose the option that best served the demo goal while staying architecturally honest about what a production system would need.</p>
+
+  <div class="decisions">
+
+    <!-- Decision 1: WebRTC -->
+    <div class="decision reveal d1">
+      <div class="decision-header">
+        <div class="decision-icon" style="background:var(--purple-dim)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        </div>
+        <div class="decision-title">
+          <h3>WebRTC for live video, not HLS</h3>
+          <p>We need sub-second latency. HLS cannot deliver that.</p>
+        </div>
+      </div>
+      <div class="decision-body">
+        <div class="decision-grid">
+          <div class="decision-col">
+            <h4><span style="color:var(--teal)">&#10003;</span> Why WebRTC</h4>
+            <ul>
+              <li><strong>Sub-second latency</strong>Typically 200-400ms on LAN, which makes the live view feel truly live</li>
+              <li><strong>Native iOS support</strong>LiveKit provides a well-maintained Swift SDK with AVFoundation integration</li>
+              <li><strong>Data channels</strong>We can send the motion overlay data alongside video without a separate transport</li>
+              <li><strong>Proven at scale</strong>LiveKit handles the SFU complexity so we focus on the product</li>
+            </ul>
+          </div>
+          <div class="decision-col">
+            <h4><span style="color:var(--coral)">&#10007;</span> Why not HLS</h4>
+            <ul>
+              <li><strong>3-10 second latency</strong>Even low-latency HLS adds seconds of delay, which defeats the purpose of "live context"</li>
+              <li><strong>Segment-based</strong>The chunking model is designed for broadcast, not interactive triage</li>
+              <li><strong>No data channel</strong>Would need a separate WebSocket for overlay data</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decision 2: On-device Vision -->
+    <div class="decision reveal d2">
+      <div class="decision-header">
+        <div class="decision-icon" style="background:var(--teal-dim)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="decision-title">
+          <h3>Apple Vision on-device, not cloud ML</h3>
+          <p>Privacy and latency both demand local processing.</p>
+        </div>
+      </div>
+      <div class="decision-body">
+        <div class="decision-grid">
+          <div class="decision-col">
+            <h4><span style="color:var(--teal)">&#10003;</span> Why on-device</h4>
+            <ul>
+              <li><strong>No frames leave the device</strong>Video stays on the phone. Only structured events (person detected, pose classified) are sent to the backend</li>
+              <li><strong>Zero network dependency</strong>Detection works even if the network is degraded, because it never needs the network</li>
+              <li><strong>Lower latency</strong>No round-trip to a cloud endpoint means detection happens in the same frame cycle</li>
+              <li><strong>Free with iOS</strong>Apple Vision is a system framework with no per-inference cost</li>
+            </ul>
+          </div>
+          <div class="decision-col">
+            <h4><span style="color:var(--coral)">&#10007;</span> Why not cloud ML</h4>
+            <ul>
+              <li><strong>Privacy risk</strong>Uploading resident video to a cloud endpoint is a non-starter for a care product</li>
+              <li><strong>Network dependent</strong>Cloud inference fails when connectivity is poor, which is exactly when you need it most</li>
+              <li><strong>Cost at scale</strong>Per-frame inference costs add up fast with 24/7 monitoring</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decision 3: SSE not WebSocket -->
+    <div class="decision reveal d2">
+      <div class="decision-header">
+        <div class="decision-icon" style="background:var(--sky-dim)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+        <div class="decision-title">
+          <h3>SSE for alerts, not WebSockets</h3>
+          <p>Alerts flow one direction. Use the simpler protocol.</p>
+        </div>
+      </div>
+      <div class="decision-body">
+        <div class="decision-grid">
+          <div class="decision-col">
+            <h4><span style="color:var(--teal)">&#10003;</span> Why SSE</h4>
+            <ul>
+              <li><strong>Unidirectional is correct</strong>Alerts and timeline updates only flow server to client. SSE matches the data flow exactly</li>
+              <li><strong>Auto-reconnect</strong>The EventSource API reconnects automatically on disconnect, which matters for mobile</li>
+              <li><strong>Simpler server code</strong>No upgrade handshake, no ping/pong, no frame parsing. Just write to the response stream</li>
+              <li><strong>HTTP-native</strong>Works with standard proxies, load balancers, and CDNs without special configuration</li>
+            </ul>
+          </div>
+          <div class="decision-col">
+            <h4><span style="color:var(--coral)">&#10007;</span> Why not WebSockets</h4>
+            <ul>
+              <li><strong>Bidirectional overhead</strong>We do not need client-to-server push on this channel. Actions go through REST</li>
+              <li><strong>Connection management</strong>WebSockets require explicit ping/pong and reconnect logic</li>
+              <li><strong>Proxy complexity</strong>Some corporate/hospital networks handle WebSocket upgrades poorly</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decision 4: Native iOS -->
+    <div class="decision reveal d3">
+      <div class="decision-header">
+        <div class="decision-icon" style="background:var(--gold-dim)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 18h.01"/></svg>
+        </div>
+        <div class="decision-title">
+          <h3>Native iOS, not React Native</h3>
+          <p>Camera, Vision, and WebRTC all demand platform-level control.</p>
+        </div>
+      </div>
+      <div class="decision-body">
+        <div class="decision-grid">
+          <div class="decision-col">
+            <h4><span style="color:var(--teal)">&#10003;</span> Why native Swift</h4>
+            <ul>
+              <li><strong>AVFoundation access</strong>Direct camera control with no bridge layer. Frame processing at the buffer level</li>
+              <li><strong>Vision framework</strong>Native VNRequest pipeline with zero serialization overhead</li>
+              <li><strong>LiveKit Swift SDK</strong>First-class WebRTC integration without React Native bridging</li>
+              <li><strong>SwiftUI</strong>Modern declarative UI with good performance for real-time updates</li>
+            </ul>
+          </div>
+          <div class="decision-col">
+            <h4><span style="color:var(--ink-muted)">Context</span></h4>
+            <p>In a production app, React Native could own the standard product screens (settings, history, profile) while native iOS handles the camera, Vision, and media-critical paths. This showcase demonstrates the native side specifically because that is where the hard engineering problems live.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decision 5: In-memory store -->
+    <div class="decision reveal d3">
+      <div class="decision-header">
+        <div class="decision-icon" style="background:var(--green-dim)">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <div class="decision-title">
+          <h3>In-memory storage, not a database</h3>
+          <p>This is a demo. Durability is a solved problem; we are proving the real-time loop.</p>
+        </div>
+      </div>
+      <div class="decision-body">
+        <div class="decision-grid">
+          <div class="decision-col">
+            <h4><span style="color:var(--teal)">&#10003;</span> Why in-memory</h4>
+            <ul>
+              <li><strong>Zero setup</strong>No database to install, configure, or migrate. Clone and run</li>
+              <li><strong>Fast iteration</strong>Change the data model, restart, and it is applied. No migration scripts</li>
+              <li><strong>Honest about scope</strong>In-memory storage forces everyone to understand this is a demo, not a deployable product</li>
+            </ul>
+          </div>
+          <div class="decision-col">
+            <h4><span style="color:var(--ink-muted)">Production path</span></h4>
+            <p>A production system would use PostgreSQL (matching Inspiren's actual stack) with WAL-based replication for durability, plus Redis for the pub/sub fanout layer. The store interface is already abstracted behind a class, so swapping in a real database is a mechanical change, not an architectural one.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- TRADE-OFFS -->
+<section id="tradeoffs">
+<div class="shell">
+  <div class="section-label"><span class="dot" style="background:var(--gold)"></span> Trade-offs</div>
+  <h2 class="serif reveal">What we accepted to move fast.</h2>
+  <p class="section-desc reveal d1">Every prototype involves trade-offs. We made them explicitly and documented the path to production for each one.</p>
+
+  <div class="tradeoff-grid">
+    <div class="tradeoff reveal d1">
+      <h4><span class="badge badge-coral" style="margin-right:8px">Accepted</span> State resets on restart</h4>
+      <p>All alerts, timelines, and sessions are lost when the backend restarts. This is fine for a demo that runs for 10 minutes. Production would persist to PostgreSQL and recover state from the database on startup.</p>
+    </div>
+    <div class="tradeoff reveal d1">
+      <h4><span class="badge badge-coral" style="margin-right:8px">Accepted</span> No push notifications</h4>
+      <p>Alerts arrive only when the app is open and connected via SSE. A production system would use APNs for background delivery so caregivers are notified even when the app is not in the foreground.</p>
+    </div>
+    <div class="tradeoff reveal d2">
+      <h4><span class="badge badge-coral" style="margin-right:8px">Accepted</span> Demo authentication only</h4>
+      <p>Bearer tokens are issued without real identity verification. Production would use OAuth or SAML, integrate with facility identity providers, and enforce role-based access with proper session management.</p>
+    </div>
+    <div class="tradeoff reveal d2">
+      <h4><span class="badge badge-coral" style="margin-right:8px">Accepted</span> Single room, single sensor</h4>
+      <p>The demo supports one room with one sensor and one caregiver. Production needs multi-room orchestration, sensor health monitoring, and alert routing based on assignments and proximity.</p>
+    </div>
+    <div class="tradeoff reveal d3">
+      <h4><span class="badge badge-gold" style="margin-right:8px">Mitigated</span> CV false positives</h4>
+      <p>The bed-exit detector uses persistence windows (0.6-0.8s) and cooldown windows (8-10s) to reduce noise, but clinical-grade accuracy would require a trained ML model, not just pose heuristics.</p>
+    </div>
+    <div class="tradeoff reveal d3">
+      <h4><span class="badge badge-gold" style="margin-right:8px">Mitigated</span> No offline support</h4>
+      <p>The app requires network connectivity to function. In production, critical events would be queued locally with durable storage and synced when connectivity returns, following a local-first architecture.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- INTENTIONALLY NOT INCLUDED -->
+<section id="scope" style="background:var(--bg-elevated)">
+<div class="shell">
+  <div class="section-label"><span class="dot" style="background:var(--sky)"></span> Intentional scope</div>
+  <h2 class="serif reveal">What we left out on purpose.</h2>
+  <p class="section-desc reveal d1">These features are solvable problems with known solutions. We omitted them because they do not help prove the core thesis: that the real-time detection-to-response loop can work with low latency and good architecture.</p>
+
+  <div class="scope-grid">
+    <div class="scope-card reveal d1">
+      <div class="scope-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg>
+      </div>
+      <h4>Database persistence</h4>
+      <p>Swap the in-memory store for PostgreSQL. The interface is already abstracted.</p>
+    </div>
+    <div class="scope-card reveal d1">
+      <div class="scope-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <h4>Push notifications</h4>
+      <p>APNs integration for background alert delivery. Standard iOS capability.</p>
+    </div>
+    <div class="scope-card reveal d2">
+      <div class="scope-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h4>Real authentication</h4>
+      <p>OAuth/SAML with facility identity providers. Well-understood integration.</p>
+    </div>
+    <div class="scope-card reveal d2">
+      <div class="scope-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+      </div>
+      <h4>Video recording</h4>
+      <p>Clip recording and replay for post-incident review. LiveKit supports this natively.</p>
+    </div>
+    <div class="scope-card reveal d3">
+      <div class="scope-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h4>Multi-room management</h4>
+      <p>Room registry, sensor health, caregiver assignment, and alert routing.</p>
+    </div>
+    <div class="scope-card reveal d3">
+      <div class="scope-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8m8 4H8m2-8H8"/></svg>
+      </div>
+      <h4>HIPAA infrastructure</h4>
+      <p>Encryption at rest, audit logging, access controls, BAA compliance. Important but orthogonal to the demo.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer>
+<div class="shell">
+  <p>CareVision &mdash; built by <a href="https://github.com/jnrahme" target="_blank">Joey Rahme</a> &middot; <a href="https://github.com/jnrahme/inspiren" target="_blank">GitHub</a> &middot; <a href="how-it-works.html">&larr; How it works</a></p>
+</div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
