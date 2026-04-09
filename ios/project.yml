@@ -1,0 +1,36 @@
+name: CareVisionSample
+options:
+  bundleIdPrefix: com.joeyrahme
+packages:
+  LiveKit:
+    url: https://github.com/livekit/client-sdk-swift.git
+    from: 2.12.1
+settings:
+  base:
+    SWIFT_VERSION: 5.10
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+targets:
+  CareVisionSample:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: CareVisionSample
+    dependencies:
+      - package: LiveKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.joeyrahme.carevisionsample
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Care Vision Sample
+        INFOPLIST_KEY_NSCameraUsageDescription: Camera access is required to preview the room and run the on-device Vision demo.
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: Microphone access is required when the demo publishes full live room audio.
+        INFOPLIST_KEY_NSLocalNetworkUsageDescription: Local network access is required to connect to the demo backend running on your Mac.
+        INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads: YES
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: ""
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTS_MACCATALYST: NO
+        SWIFT_EMIT_LOC_STRINGS: NO
+    scheme:
+      gatherCoverageData: false

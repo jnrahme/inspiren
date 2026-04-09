@@ -1,0 +1,1198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Care Vision Laptop Sensor</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4efe7;
+        --panel: rgba(255, 252, 247, 0.82);
+        --panel-strong: rgba(255, 252, 247, 0.96);
+        --border: rgba(110, 95, 79, 0.14);
+        --shadow: 0 24px 80px rgba(87, 67, 44, 0.12);
+        --text: #2f2419;
+        --muted: #6b5e51;
+        --accent: #0d7c66;
+        --accent-strong: #0a5f4f;
+        --warm: #dd8d49;
+        --danger: #b24735;
+        --success: #166a53;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(221, 141, 73, 0.18), transparent 34%),
+          radial-gradient(circle at top right, rgba(13, 124, 102, 0.16), transparent 28%),
+          linear-gradient(180deg, #f8f4ed 0%, var(--bg) 100%);
+      }
+
+      .shell {
+        width: min(1240px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 32px 0 48px;
+      }
+
+      .hero {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
+        align-items: stretch;
+      }
+
+      .hero-card,
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(16px);
+      }
+
+      .hero-card {
+        padding: 28px;
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        letter-spacing: 0.22em;
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        color: rgba(47, 36, 25, 0.55);
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+        line-height: 0.96;
+        letter-spacing: -0.03em;
+      }
+
+      h1 {
+        font-size: clamp(2.6rem, 6vw, 4.8rem);
+      }
+
+      h2 {
+        font-size: clamp(1.7rem, 3vw, 2.5rem);
+      }
+
+      h3 {
+        font-size: 1.2rem;
+      }
+
+      .lede {
+        margin: 18px 0 0;
+        max-width: 62ch;
+        font-size: 1.02rem;
+        line-height: 1.75;
+        color: var(--muted);
+      }
+
+      .status-grid {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .status-card {
+        padding: 18px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.58);
+        border: 1px solid rgba(110, 95, 79, 0.1);
+      }
+
+      .status-label {
+        margin: 0 0 8px;
+        font-size: 0.76rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(47, 36, 25, 0.52);
+      }
+
+      .status-value {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.5;
+        font-weight: 600;
+        color: var(--text);
+        word-break: break-word;
+      }
+
+      .layout {
+        margin-top: 24px;
+        display: grid;
+        gap: 20px;
+        grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      }
+
+      .panel {
+        padding: 24px;
+      }
+
+      .panel + .panel {
+        margin-top: 20px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 14px;
+      }
+
+      .field-grid {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      label {
+        display: grid;
+        gap: 8px;
+        font-size: 0.88rem;
+        color: var(--muted);
+      }
+
+      input,
+      select,
+      textarea,
+      button {
+        font: inherit;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border-radius: 16px;
+        border: 1px solid rgba(110, 95, 79, 0.16);
+        background: rgba(255, 255, 255, 0.88);
+        color: var(--text);
+        padding: 13px 14px;
+        transition: border-color 140ms ease, box-shadow 140ms ease;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: rgba(13, 124, 102, 0.4);
+        box-shadow: 0 0 0 4px rgba(13, 124, 102, 0.12);
+      }
+
+      textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 13px 18px;
+        cursor: pointer;
+        transition: transform 140ms ease, opacity 140ms ease, background 140ms ease;
+      }
+
+      button:hover:not(:disabled) {
+        transform: translateY(-1px);
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.56;
+      }
+
+      .primary-button {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+        color: white;
+        font-weight: 700;
+      }
+
+      .secondary-button {
+        background: rgba(47, 36, 25, 0.08);
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .danger-button {
+        background: rgba(178, 71, 53, 0.12);
+        color: var(--danger);
+        font-weight: 700;
+      }
+
+      .preview-shell {
+        margin-top: 18px;
+        border-radius: 24px;
+        overflow: hidden;
+        background:
+          linear-gradient(135deg, rgba(13, 124, 102, 0.18), rgba(47, 36, 25, 0.82)),
+          #1b1410;
+        min-height: 360px;
+        display: grid;
+        place-items: center;
+        position: relative;
+      }
+
+      .preview-shell video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .preview-overlay {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .preview-empty {
+        padding: 28px;
+        text-align: center;
+        color: rgba(255, 252, 247, 0.92);
+        max-width: 42ch;
+        line-height: 1.65;
+      }
+
+      .preview-pill {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(15, 12, 9, 0.52);
+        color: rgba(255, 252, 247, 0.96);
+        font-size: 0.9rem;
+        backdrop-filter: blur(14px);
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255, 252, 247, 0.3);
+      }
+
+      .dot.live {
+        background: #ef6f5b;
+        box-shadow: 0 0 0 8px rgba(239, 111, 91, 0.18);
+      }
+
+      .instruction-list,
+      .log-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 12px;
+      }
+
+      .instruction-item,
+      .log-item {
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.64);
+        border: 1px solid rgba(110, 95, 79, 0.1);
+        line-height: 1.6;
+      }
+
+      .instruction-item strong,
+      .mono {
+        font-family: "SFMono-Regular", "JetBrains Mono", "Cascadia Code", monospace;
+      }
+
+      .hint {
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: var(--muted);
+      }
+
+      .warning {
+        margin-top: 14px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(221, 141, 73, 0.12);
+        border: 1px solid rgba(221, 141, 73, 0.22);
+        color: #714316;
+        line-height: 1.6;
+      }
+
+      .log-list {
+        max-height: 360px;
+        overflow: auto;
+      }
+
+      .log-time {
+        display: inline-block;
+        min-width: 78px;
+        margin-right: 10px;
+        font-family: "SFMono-Regular", "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        color: rgba(47, 36, 25, 0.54);
+      }
+
+      @media (max-width: 980px) {
+        .hero,
+        .layout,
+        .field-grid,
+        .status-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .shell {
+          width: min(100vw - 18px, 1240px);
+          padding-top: 18px;
+        }
+
+        h1 {
+          font-size: 2.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <section class="hero">
+        <article class="hero-card">
+          <p class="eyebrow">Laptop Sensor Demo</p>
+          <h1>Use the Mac webcam as the room device.</h1>
+          <p class="lede">
+            This page turns the laptop into the sensor side of the Inspiren-style demo.
+            It publishes webcam video into the LiveKit room, reuses the existing backend
+            token flow, and lets you trigger caregiver alerts so the phone app can act as
+            the response surface.
+          </p>
+        </article>
+
+        <aside class="hero-card status-grid">
+          <section class="status-card">
+            <p class="status-label">Backend</p>
+            <p class="status-value" id="backend-origin">-</p>
+          </section>
+          <section class="status-card">
+            <p class="status-label">Phone Base URL</p>
+            <p class="status-value" id="phone-base-url">-</p>
+          </section>
+          <section class="status-card">
+            <p class="status-label">Room</p>
+            <p class="status-value" id="status-room">-</p>
+          </section>
+          <section class="status-card">
+            <p class="status-label">Connection</p>
+            <p class="status-value" id="status-connection">Idle</p>
+          </section>
+        </aside>
+      </section>
+
+      <section class="layout">
+        <div>
+          <article class="panel">
+            <p class="eyebrow">Sensor Controls</p>
+            <h2>Start the room-side webcam publisher.</h2>
+            <div class="stack" style="margin-top: 18px;">
+              <div class="field-grid">
+                <label>
+                  Display name
+                  <input id="display-name" autocomplete="off" />
+                </label>
+                <label>
+                  Room ID
+                  <input id="room-id" autocomplete="off" />
+                </label>
+              </div>
+
+              <div class="field-grid">
+                <label>
+                  Device ID
+                  <input id="device-id" autocomplete="off" />
+                </label>
+                <label>
+                  Camera source
+                  <select id="camera-mode">
+                    <option value="user">Default webcam</option>
+                    <option value="environment">Prefer rear / external camera</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="button-row">
+                <button class="primary-button" id="start-button" type="button">
+                  Start laptop sensor
+                </button>
+                <button class="danger-button" id="stop-button" type="button" disabled>
+                  Stop sensor
+                </button>
+              </div>
+
+              <p class="hint">
+                For webcam permission, open this page on the Mac at
+                <span class="mono" id="local-page-url">-</span>.
+                The phone should use the LAN base URL shown on the right.
+              </p>
+              <div class="warning" id="secure-context-warning" hidden></div>
+            </div>
+
+            <div class="preview-shell" id="preview-shell">
+            <div class="preview-pill">
+                <span class="dot" id="live-dot"></span>
+                <span id="preview-state">Preview idle</span>
+              </div>
+              <canvas class="preview-overlay" id="preview-overlay" hidden></canvas>
+              <div class="preview-empty" id="preview-empty">
+                Start the laptop sensor to request camera permission, publish the stream,
+                and keep this Mac acting as the room device while the phone stays in
+                Caregiver Mode.
+              </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <p class="eyebrow">Manual Event Trigger</p>
+            <h2>Drive the caregiver workflow from the laptop.</h2>
+            <div class="stack" style="margin-top: 18px;">
+              <div class="field-grid">
+                <label>
+                  Event type
+                  <select id="event-type">
+                    <option value="bed_exit_risk">bed_exit_risk</option>
+                    <option value="person_detected">person_detected</option>
+                    <option value="motion_spike">motion_spike</option>
+                    <option value="no_motion">no_motion</option>
+                    <option value="upright_pose_detected">upright_pose_detected</option>
+                  </select>
+                </label>
+                <label>
+                  Confidence
+                  <input id="confidence" type="number" min="0" max="1" step="0.01" value="0.93" />
+                </label>
+              </div>
+
+              <label>
+                Optional note
+                <textarea id="event-note" placeholder="Example: manual trigger while caregiver is reviewing stream quality."></textarea>
+              </label>
+
+              <div class="button-row">
+                <button class="secondary-button" id="trigger-button" type="button" disabled>
+                  Trigger alert on phone
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div>
+          <article class="panel">
+            <p class="eyebrow">Phone Setup</p>
+            <h2>Connect the iPhone caregiver app.</h2>
+            <ol class="instruction-list" id="phone-steps"></ol>
+          </article>
+
+          <article class="panel">
+            <p class="eyebrow">Run Log</p>
+            <h2>Watch the demo state.</h2>
+            <ul class="log-list" id="log-list"></ul>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      window.__CARE_VISION_BOOTSTRAP__ = __CARE_VISION_BOOTSTRAP__;
+    </script>
+    <script type="module">
+      import {
+        Room,
+        RoomEvent,
+        Track,
+        createLocalVideoTrack,
+      } from "/demo/vendor/livekit-client.esm.mjs";
+
+      const bootstrap = window.__CARE_VISION_BOOTSTRAP__ ?? {};
+      const params = new URLSearchParams(window.location.search);
+      const MOTION_OVERLAY_TOPIC = "motion-overlay";
+      const textEncoder = new TextEncoder();
+
+      const elements = {
+        backendOrigin: document.getElementById("backend-origin"),
+        phoneBaseUrl: document.getElementById("phone-base-url"),
+        roomStatus: document.getElementById("status-room"),
+        connectionStatus: document.getElementById("status-connection"),
+        displayName: document.getElementById("display-name"),
+        roomId: document.getElementById("room-id"),
+        deviceId: document.getElementById("device-id"),
+        cameraMode: document.getElementById("camera-mode"),
+        startButton: document.getElementById("start-button"),
+        stopButton: document.getElementById("stop-button"),
+        triggerButton: document.getElementById("trigger-button"),
+        confidence: document.getElementById("confidence"),
+        eventType: document.getElementById("event-type"),
+        eventNote: document.getElementById("event-note"),
+        previewShell: document.getElementById("preview-shell"),
+        previewOverlay: document.getElementById("preview-overlay"),
+        previewEmpty: document.getElementById("preview-empty"),
+        previewState: document.getElementById("preview-state"),
+        liveDot: document.getElementById("live-dot"),
+        phoneSteps: document.getElementById("phone-steps"),
+        logList: document.getElementById("log-list"),
+        localPageUrl: document.getElementById("local-page-url"),
+        secureContextWarning: document.getElementById("secure-context-warning"),
+      };
+
+      const state = {
+        accessToken: "",
+        session: null,
+        room: null,
+        localVideoTrack: null,
+        stream: null,
+        participantName: "",
+        isStarting: false,
+      };
+
+      const motionState = {
+        analysisCanvas: document.createElement("canvas"),
+        analysisContext: null,
+        trail: [],
+        lastFrameLuma: null,
+        timerId: 0,
+        overlayInFlight: false,
+        pendingOverlay: null,
+      };
+
+      const localPageUrl = bootstrap.suggestedLocalPageUrl ?? window.location.href;
+      const phoneBaseUrl = bootstrap.suggestedPhoneBaseUrl ?? window.location.origin;
+
+      elements.backendOrigin.textContent = bootstrap.currentOrigin ?? window.location.origin;
+      elements.phoneBaseUrl.textContent = phoneBaseUrl;
+      elements.localPageUrl.textContent = localPageUrl;
+      elements.displayName.value = params.get("displayName") ?? "Laptop Sensor";
+      elements.roomId.value = params.get("roomId") ?? bootstrap.defaultRoomId ?? "room-demo-a";
+      elements.deviceId.value = params.get("deviceId") ?? bootstrap.defaultDeviceId ?? "laptop-sensor-01";
+
+      if (!window.isSecureContext && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+        elements.secureContextWarning.hidden = false;
+        elements.secureContextWarning.textContent =
+          "Browser camera access is blocked on insecure LAN pages. Keep the laptop page on localhost, and only use the LAN URL inside the phone app.";
+      }
+
+      function nowStamp() {
+        return new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+      }
+
+      function log(message, tone = "info") {
+        const item = document.createElement("li");
+        item.className = "log-item";
+
+        const time = document.createElement("span");
+        time.className = "log-time";
+        time.textContent = nowStamp();
+
+        const text = document.createElement("span");
+        text.textContent = message;
+        if (tone === "error") {
+          text.style.color = "#9b2f21";
+        } else if (tone === "success") {
+          text.style.color = "#166a53";
+        }
+
+        item.append(time, text);
+        elements.logList.prepend(item);
+
+        while (elements.logList.children.length > 20) {
+          elements.logList.lastElementChild?.remove();
+        }
+      }
+
+      function renderPhoneSteps() {
+        const roomId = elements.roomId.value.trim() || bootstrap.defaultRoomId || "room-demo-a";
+        const steps = [
+          `On the iPhone, open CareVisionSample and tap Setup.`,
+          `Set Backend to ${phoneBaseUrl}.`,
+          `Set Room ID to ${roomId}.`,
+          `Enter Caregiver Mode and wait for the live room tile.`,
+          `Use Trigger alert on phone here to prove alert intake and acknowledgement.`,
+        ];
+
+        elements.phoneSteps.innerHTML = "";
+        for (const step of steps) {
+          const item = document.createElement("li");
+          item.className = "instruction-item";
+          item.textContent = step;
+          elements.phoneSteps.appendChild(item);
+        }
+      }
+
+      function updateStatus() {
+        const roomId = elements.roomId.value.trim() || bootstrap.defaultRoomId || "room-demo-a";
+        elements.roomStatus.textContent = roomId;
+
+        const isLive = Boolean(state.room && state.localVideoTrack);
+        elements.connectionStatus.textContent = isLive
+          ? `Live in ${roomId}`
+          : state.isStarting
+            ? "Starting webcam..."
+            : "Idle";
+        elements.previewState.textContent = isLive
+          ? "Publishing laptop camera"
+          : state.isStarting
+            ? "Preparing camera permission"
+            : "Preview idle";
+        elements.liveDot.classList.toggle("live", isLive);
+        elements.startButton.disabled = state.isStarting || isLive;
+        elements.stopButton.disabled = !isLive;
+        elements.triggerButton.disabled = !state.accessToken;
+      }
+
+      function clearPreview() {
+        for (const element of elements.previewShell.querySelectorAll("video")) {
+          element.remove();
+        }
+        elements.previewEmpty.hidden = false;
+      }
+
+      function emptyOverlay(updatedAt = new Date().toISOString()) {
+        return {
+          updatedAt,
+          personDetected: false,
+          poseLabel: "none",
+          motionScore: 0,
+          personBox: null,
+          trail: [],
+          skeleton: [],
+        };
+      }
+
+      function resizePreviewOverlay() {
+        const bounds = elements.previewShell.getBoundingClientRect();
+        const devicePixelRatio = window.devicePixelRatio || 1;
+
+        elements.previewOverlay.width = Math.max(1, Math.floor(bounds.width * devicePixelRatio));
+        elements.previewOverlay.height = Math.max(1, Math.floor(bounds.height * devicePixelRatio));
+        elements.previewOverlay.style.width = `${bounds.width}px`;
+        elements.previewOverlay.style.height = `${bounds.height}px`;
+
+        const context = elements.previewOverlay.getContext("2d");
+        context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+      }
+
+      function getCoverRect(containerWidth, containerHeight, aspectRatio = 16 / 9) {
+        const containerAspect = containerWidth / Math.max(containerHeight, 1);
+
+        if (containerAspect > aspectRatio) {
+          const renderHeight = containerWidth / aspectRatio;
+          return {
+            x: 0,
+            y: (containerHeight - renderHeight) / 2,
+            width: containerWidth,
+            height: renderHeight,
+          };
+        }
+
+        const renderWidth = containerHeight * aspectRatio;
+        return {
+          x: (containerWidth - renderWidth) / 2,
+          y: 0,
+          width: renderWidth,
+          height: containerHeight,
+        };
+      }
+
+      function mapPoint(point, rect) {
+        return {
+          x: rect.x + rect.width * point.x,
+          y: rect.y + rect.height * point.y,
+        };
+      }
+
+      function mapRect(normalizedRect, rect) {
+        return {
+          x: rect.x + rect.width * normalizedRect.x,
+          y: rect.y + rect.height * normalizedRect.y,
+          width: rect.width * normalizedRect.width,
+          height: rect.height * normalizedRect.height,
+        };
+      }
+
+      function drawPreviewOverlay(overlay) {
+        const context = elements.previewOverlay.getContext("2d");
+        const width = elements.previewOverlay.clientWidth;
+        const height = elements.previewOverlay.clientHeight;
+        const videoRect = getCoverRect(width, height);
+
+        context.clearRect(0, 0, width, height);
+        elements.previewOverlay.hidden = !overlay;
+
+        if (!overlay || (!overlay.personDetected && !overlay.personBox && overlay.trail.length < 2)) {
+          return;
+        }
+
+        context.lineCap = "round";
+        context.lineJoin = "round";
+
+        if (overlay.trail.length > 1) {
+          context.beginPath();
+          overlay.trail.forEach((point, index) => {
+            const mapped = mapPoint(point, videoRect);
+            if (index === 0) {
+              context.moveTo(mapped.x, mapped.y);
+            } else {
+              context.lineTo(mapped.x, mapped.y);
+            }
+          });
+          context.strokeStyle = "rgba(112, 255, 171, 0.95)";
+          context.lineWidth = 4;
+          context.shadowBlur = 16;
+          context.shadowColor = "rgba(112, 255, 171, 0.28)";
+          context.stroke();
+          context.shadowBlur = 0;
+        }
+
+        if (overlay.personBox) {
+          const rect = mapRect(overlay.personBox, videoRect);
+          const radius = 18;
+          context.beginPath();
+          context.moveTo(rect.x + radius, rect.y);
+          context.arcTo(rect.x + rect.width, rect.y, rect.x + rect.width, rect.y + rect.height, radius);
+          context.arcTo(rect.x + rect.width, rect.y + rect.height, rect.x, rect.y + rect.height, radius);
+          context.arcTo(rect.x, rect.y + rect.height, rect.x, rect.y, radius);
+          context.arcTo(rect.x, rect.y, rect.x + rect.width, rect.y, radius);
+          context.closePath();
+          context.fillStyle = "rgba(112, 255, 171, 0.1)";
+          context.strokeStyle = "rgba(112, 255, 171, 0.88)";
+          context.lineWidth = 2.4;
+          context.fill();
+          context.stroke();
+        }
+
+        const head = overlay.trail.at(-1);
+        if (head) {
+          const mapped = mapPoint(head, videoRect);
+          context.beginPath();
+          context.fillStyle = "rgba(112, 255, 171, 1)";
+          context.arc(mapped.x, mapped.y, 5, 0, Math.PI * 2);
+          context.fill();
+        }
+      }
+
+      function queueMotionOverlay(overlay) {
+        if (!state.room && !state.accessToken) {
+          return;
+        }
+
+        const roomId = elements.roomId.value.trim() || bootstrap.defaultRoomId || "room-demo-a";
+        const deviceId = elements.deviceId.value.trim() || bootstrap.defaultDeviceId || "laptop-sensor-01";
+
+        motionState.pendingOverlay = {
+          roomId,
+          deviceId,
+          overlay,
+        };
+
+        if (!motionState.overlayInFlight) {
+          void flushMotionOverlayQueue();
+        }
+      }
+
+      async function flushMotionOverlayQueue() {
+        if (motionState.overlayInFlight) {
+          return;
+        }
+
+        motionState.overlayInFlight = true;
+
+        while (motionState.pendingOverlay) {
+          const payload = motionState.pendingOverlay;
+          motionState.pendingOverlay = null;
+
+          try {
+            if (state.room) {
+              await state.room.localParticipant.publishData(
+                textEncoder.encode(JSON.stringify(payload)),
+                {
+                  reliable: false,
+                  topic: MOTION_OVERLAY_TOPIC,
+                },
+              );
+            }
+
+            if (state.accessToken) {
+              await postJSON("/overlay/frames", payload, state.accessToken);
+            }
+          } catch (error) {
+            motionState.pendingOverlay = null;
+            log(error instanceof Error ? error.message : "Failed to relay motion overlay.", "error");
+            break;
+          }
+        }
+
+        motionState.overlayInFlight = false;
+      }
+
+      function stopMotionTracking({ sendClear = true } = {}) {
+        if (motionState.timerId) {
+          window.clearInterval(motionState.timerId);
+          motionState.timerId = 0;
+        }
+
+        motionState.lastFrameLuma = null;
+        motionState.trail = [];
+        drawPreviewOverlay(null);
+
+        if (sendClear && state.accessToken) {
+          queueMotionOverlay(emptyOverlay());
+        }
+      }
+
+      function startMotionTracking(videoElement) {
+        stopMotionTracking({ sendClear: false });
+        resizePreviewOverlay();
+
+        motionState.analysisCanvas.width = 160;
+        motionState.analysisCanvas.height = 90;
+        motionState.analysisContext = motionState.analysisCanvas.getContext("2d", {
+          willReadFrequently: true,
+        });
+
+        motionState.timerId = window.setInterval(() => {
+          analyzeMotionFrame(videoElement);
+        }, 180);
+      }
+
+      function analyzeMotionFrame(videoElement) {
+        if (!motionState.analysisContext || videoElement.readyState < 2) {
+          return;
+        }
+
+        const canvas = motionState.analysisCanvas;
+        const context = motionState.analysisContext;
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+        const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+        const currentLuma = new Uint8Array(canvas.width * canvas.height);
+        const previousLuma = motionState.lastFrameLuma;
+
+        let changedPixelCount = 0;
+        let minX = canvas.width;
+        let minY = canvas.height;
+        let maxX = 0;
+        let maxY = 0;
+        let sumX = 0;
+        let sumY = 0;
+
+        for (let index = 0, pixelIndex = 0; index < pixels.length; index += 4, pixelIndex += 1) {
+          const red = pixels[index];
+          const green = pixels[index + 1];
+          const blue = pixels[index + 2];
+          const luma = Math.round(red * 0.299 + green * 0.587 + blue * 0.114);
+          currentLuma[pixelIndex] = luma;
+
+          if (!previousLuma) {
+            continue;
+          }
+
+          const delta = Math.abs(luma - previousLuma[pixelIndex]);
+          if (delta < 26) {
+            continue;
+          }
+
+          const x = pixelIndex % canvas.width;
+          const y = Math.floor(pixelIndex / canvas.width);
+
+          changedPixelCount += 1;
+          minX = Math.min(minX, x);
+          minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x);
+          maxY = Math.max(maxY, y);
+          sumX += x;
+          sumY += y;
+        }
+
+        motionState.lastFrameLuma = currentLuma;
+
+        if (!previousLuma || changedPixelCount < 110) {
+          motionState.trail = motionState.trail.slice(-2);
+          const cleared = emptyOverlay();
+          queueMotionOverlay(cleared);
+          drawPreviewOverlay(cleared);
+          return;
+        }
+
+        const center = {
+          x: sumX / changedPixelCount / canvas.width,
+          y: sumY / changedPixelCount / canvas.height,
+        };
+
+        const lastTrailPoint = motionState.trail.at(-1);
+        if (!lastTrailPoint) {
+          motionState.trail.push(center);
+        } else {
+          const deltaX = center.x - lastTrailPoint.x;
+          const deltaY = center.y - lastTrailPoint.y;
+          if (Math.hypot(deltaX, deltaY) >= 0.015) {
+            motionState.trail.push(center);
+          }
+        }
+
+        motionState.trail = motionState.trail.slice(-12);
+
+        const overlay = {
+          updatedAt: new Date().toISOString(),
+          personDetected: true,
+          poseLabel: "motion-tracked",
+          motionScore: Math.min(1, changedPixelCount / 1100),
+          personBox: {
+            x: minX / canvas.width,
+            y: minY / canvas.height,
+            width: Math.max((maxX - minX) / canvas.width, 0.08),
+            height: Math.max((maxY - minY) / canvas.height, 0.12),
+          },
+          trail: motionState.trail,
+          skeleton: [],
+        };
+
+        queueMotionOverlay(overlay);
+        drawPreviewOverlay(overlay);
+      }
+
+      async function postJSON(path, body, accessToken = "") {
+        const response = await fetch(path, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+          },
+          body: JSON.stringify(body),
+        });
+
+        if (!response.ok) {
+          let message = `${response.status} ${response.statusText}`;
+          try {
+            const data = await response.json();
+            if (typeof data?.message === "string") {
+              message = data.message;
+            }
+          } catch {}
+          throw new Error(message);
+        }
+
+        return response.json();
+      }
+
+      function bindRoomEvents(room) {
+        room
+          .on(RoomEvent.Connected, () => {
+            log("LiveKit room connected.", "success");
+            updateStatus();
+          })
+          .on(RoomEvent.Disconnected, () => {
+            log("LiveKit room disconnected.");
+            updateStatus();
+          })
+          .on(RoomEvent.MediaDevicesError, (error) => {
+            log(`Camera error: ${error.message}`, "error");
+          });
+      }
+
+      async function stopSensor({ keepToken = false } = {}) {
+        stopMotionTracking({ sendClear: !keepToken });
+
+        try {
+          if (state.room && state.localVideoTrack) {
+            state.room.localParticipant.unpublishTrack(state.localVideoTrack.mediaStreamTrack);
+          }
+        } catch {}
+
+        if (state.localVideoTrack) {
+          state.localVideoTrack.detach().forEach((element) => element.remove());
+          state.localVideoTrack.stop();
+        }
+
+        if (state.room) {
+          state.room.disconnect();
+        }
+
+        state.room = null;
+        state.localVideoTrack = null;
+        state.stream = null;
+        state.participantName = "";
+        if (!keepToken) {
+          state.accessToken = "";
+          state.session = null;
+        }
+        clearPreview();
+        updateStatus();
+      }
+
+      async function startSensor() {
+        if (state.isStarting || state.room) {
+          return;
+        }
+
+        const displayName = elements.displayName.value.trim() || "Laptop Sensor";
+        const roomId = elements.roomId.value.trim() || bootstrap.defaultRoomId || "room-demo-a";
+        const deviceId = elements.deviceId.value.trim() || bootstrap.defaultDeviceId || "laptop-sensor-01";
+        const facingMode = elements.cameraMode.value;
+
+        state.isStarting = true;
+        updateStatus();
+
+        try {
+          if (!window.isSecureContext && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+            throw new Error("Open the laptop sensor page on localhost so the browser can access the webcam.");
+          }
+
+          log(`Creating sensor session for ${displayName}.`);
+          const sessionResponse = await postJSON("/auth/demo-session", {
+            displayName,
+            role: "sensor",
+          });
+
+          state.accessToken = sessionResponse.accessToken;
+          state.session = sessionResponse.session;
+          state.participantName = `sensor-${roomId}`;
+
+          const streamResponse = await postJSON(
+            "/stream/token",
+            {
+              roomId,
+              participantName: state.participantName,
+              role: "sensor",
+            },
+            state.accessToken,
+          );
+          state.stream = streamResponse;
+
+          log(`Connecting to ${streamResponse.livekitUrl}.`);
+          const room = new Room({
+            adaptiveStream: true,
+            dynacast: true,
+          });
+          bindRoomEvents(room);
+          room.prepareConnection(streamResponse.livekitUrl, streamResponse.token);
+          await room.connect(streamResponse.livekitUrl, streamResponse.token);
+
+          const localVideoTrack = await createLocalVideoTrack({
+            facingMode,
+            frameRate: 24,
+            resolution: {
+              width: 1280,
+              height: 720,
+            },
+          });
+
+          await room.localParticipant.publishTrack(localVideoTrack.mediaStreamTrack, {
+            name: `${deviceId}-camera`,
+            source: Track.Source.Camera,
+          });
+
+          clearPreview();
+          const previewElement = localVideoTrack.attach();
+          previewElement.autoplay = true;
+          previewElement.muted = true;
+          previewElement.playsInline = true;
+          elements.previewShell.appendChild(previewElement);
+          elements.previewEmpty.hidden = true;
+          startMotionTracking(previewElement);
+
+          state.room = room;
+          state.localVideoTrack = localVideoTrack;
+
+          log(`Laptop webcam is live in room ${roomId}.`, "success");
+        } catch (error) {
+          await stopSensor();
+          log(error instanceof Error ? error.message : "Failed to start laptop sensor.", "error");
+        } finally {
+          state.isStarting = false;
+          updateStatus();
+        }
+      }
+
+      async function triggerEvent() {
+        if (!state.accessToken) {
+          log("Start the laptop sensor before sending events.", "error");
+          return;
+        }
+
+        try {
+          const roomId = elements.roomId.value.trim() || bootstrap.defaultRoomId || "room-demo-a";
+          const deviceId = elements.deviceId.value.trim() || bootstrap.defaultDeviceId || "laptop-sensor-01";
+          const eventType = elements.eventType.value;
+          const confidence = Number(elements.confidence.value);
+          const note = elements.eventNote.value.trim();
+
+          const payload = {
+            idempotencyKey: `manual-${eventType}-${crypto.randomUUID()}`,
+            roomId,
+            deviceId,
+            eventType,
+            confidence: Number.isFinite(confidence) ? confidence : 0.93,
+            occurredAt: new Date().toISOString(),
+            metadata: {
+              source: "laptop-manual-trigger",
+              note,
+              participantName: state.participantName,
+            },
+          };
+
+          const response = await postJSON("/events/cv", payload, state.accessToken);
+          const alertId = response.alert?.id ? ` alert ${response.alert.id}` : "";
+          log(`Created ${eventType}${alertId}.`, "success");
+        } catch (error) {
+          log(error instanceof Error ? error.message : "Failed to trigger event.", "error");
+        }
+      }
+
+      elements.startButton.addEventListener("click", () => {
+        startSensor();
+      });
+      elements.stopButton.addEventListener("click", () => {
+        stopSensor();
+        log("Laptop sensor stopped.");
+      });
+      elements.triggerButton.addEventListener("click", () => {
+        triggerEvent();
+      });
+      elements.roomId.addEventListener("input", () => {
+        renderPhoneSteps();
+        updateStatus();
+      });
+      window.addEventListener("resize", () => {
+        if (!elements.previewOverlay.hidden) {
+          resizePreviewOverlay();
+        }
+      });
+
+      renderPhoneSteps();
+      updateStatus();
+      log("Laptop sensor page ready.");
+    </script>
+  </body>
+</html>
