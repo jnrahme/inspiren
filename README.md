@@ -2,6 +2,8 @@
 
 A working prototype of a real-time caregiver alert system with live video streaming and on-device computer vision. Built as a showcase of the kind of mobile infrastructure that powers care-response products in senior living.
 
+**[How it works](https://jnrahme.github.io/inspiren/how-it-works.html)** | **[Why we built it this way](https://jnrahme.github.io/inspiren/technical-decisions.html)** | **[Documentation site](https://jnrahme.github.io/inspiren/)**
+
 ## What it does
 
 CareVision demonstrates a complete alert loop from detection to response:
